@@ -233,7 +233,7 @@ int integer_encode_list(std::vector<std::string> sequenceList,
         alphabetSize = 21;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length() * alphabetSize) > outputArray.shape(1))
+            if ((sequenceList[i].length()) > outputArray.shape(1))
                 return INVALID_SEQUENCE;
 
             for (size_t j=0; j < sequenceList[i].length(); j++){
@@ -253,7 +253,7 @@ int integer_encode_list(std::vector<std::string> sequenceList,
         alphabetSize = 20;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length() * alphabetSize) > outputArray.shape(1))
+            if ((sequenceList[i].length()) > outputArray.shape(1))
                 return INVALID_SEQUENCE;
 
             for (size_t j=0; j < sequenceList[i].length(); j++){

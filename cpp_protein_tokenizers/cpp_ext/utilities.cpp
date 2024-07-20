@@ -60,12 +60,17 @@ std::tuple<int, int> validate_sequence_list(std::vector<std::string> sequenceLis
 
                 }
             }
-            if (sequence.length() > maxLength){
-                if (maxLength > 0 && allSameLength)
-                    return std::tuple<int, int>{0, INVALID_SEQUENCE};
-                else
-                    maxLength = sequence.length();
+            if (allSameLength){
+                if (sequence.length() != maxLength){
+                    if (maxLength > 0)
+                        return std::tuple<int, int>{0, INVALID_SEQUENCE};
+                    else
+                        maxLength = sequence.length();
+                }
             }
+            else if (sequence.length() > maxLength)
+                maxLength = sequence.length();
+
             if (!validQuery)
                 break;
         }
@@ -104,12 +109,17 @@ std::tuple<int, int> validate_sequence_list(std::vector<std::string> sequenceLis
 
                 }
             }
-            if (sequence.length() > maxLength){
-                if (maxLength > 0 && allSameLength)
-                    return std::tuple<int, int>{0, INVALID_SEQUENCE};
-                else
-                    maxLength = sequence.length();
+            if (allSameLength){
+                if (sequence.length() != maxLength){
+                    if (maxLength > 0)
+                        return std::tuple<int, int>{0, INVALID_SEQUENCE};
+                    else
+                        maxLength = sequence.length();
+                }
             }
+            else if (sequence.length() > maxLength)
+                maxLength = sequence.length();
+
             if (!validQuery)
                 break;
         }
@@ -148,12 +158,17 @@ std::tuple<int, int> validate_sequence_list(std::vector<std::string> sequenceLis
 
                 }
             }
-            if (sequence.length() > maxLength){
-                if (maxLength > 0 && allSameLength)
-                    return std::tuple<int, int>{0, INVALID_SEQUENCE};
-                else
-                    maxLength = sequence.length();
+            if (allSameLength){
+                if (sequence.length() != maxLength){
+                    if (maxLength > 0)
+                        return std::tuple<int, int>{0, INVALID_SEQUENCE};
+                    else
+                        maxLength = sequence.length();
+                }
             }
+            else if (sequence.length() > maxLength)
+                maxLength = sequence.length();
+
             if (!validQuery)
                 break;
         }

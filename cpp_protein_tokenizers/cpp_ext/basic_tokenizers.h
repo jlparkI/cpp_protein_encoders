@@ -22,7 +22,7 @@ int onehot_3d_encode_list(std::vector<std::string> sequenceList,
         bool expandedSymbolSet, bool addGaps);
 
 int integer_encode_list(std::vector<std::string> sequenceList,
-        nb::ndarray<uint8_t, nb::shape<-1,-1,-1>, nb::device::cpu, nb::c_contig> outputArray,
+        nb::ndarray<uint8_t, nb::shape<-1,-1>, nb::device::cpu, nb::c_contig> outputArray,
         bool expandedSymbolSet, bool addGaps);
 
 int expandedSymbolSetCharReader(char &letter);

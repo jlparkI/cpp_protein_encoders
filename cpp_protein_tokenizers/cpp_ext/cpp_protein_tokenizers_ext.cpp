@@ -5,6 +5,8 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/vector.h>    // Enables automatic type conversion for C++, python containers
+#include <nanobind/stl/string.h>    // Enables automatic type conversion for C++, python containers
+#include <nanobind/stl/tuple.h>
 #include <string>
 #include <vector>
 #include "utilities.h"
@@ -21,7 +23,7 @@ NB_MODULE(cpp_protein_tokenizers_ext, m){
     m.def("onehot_3d_encode_list", &onehot_3d_encode_list,
             nb::arg("sequenceList"), nb::arg("outputArray").noconvert(),
             nb::arg("expandedSymbolSet"), nb::arg("addGaps"));
-    m.def("integer_encode_list", &onehot_3d_encode_list,
+    m.def("integer_encode_list", &integer_encode_list,
             nb::arg("sequenceList"), nb::arg("outputArray").noconvert(),
             nb::arg("expandedSymbolSet"), nb::arg("addGaps"));
 

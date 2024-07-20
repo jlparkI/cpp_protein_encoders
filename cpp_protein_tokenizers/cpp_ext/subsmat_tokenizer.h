@@ -21,6 +21,6 @@ int subsmat_3d_encode_list(std::vector<std::string> sequenceList,
                 nb::ndarray<float, nb::shape<21,21>, nb::device::cpu, nb::c_contig> aaTokens);
 
 int subsmat_encode_array(float *outputArray, float *aaTokens,
-        std::vector<std::string> sequenceList, size_t maxAAs);
+        std::vector<std::string> &sequenceList, size_t maxAAs);
 
 #endif

@@ -6,18 +6,21 @@ namespace nb = nanobind;
 #define VALID_SEQUENCE 1
 #define INVALID_SEQUENCE 0
 
+//The substitution matrix always has an alphabet size of 21.
+#define STD_ALPHABET_SIZE 21
 
 
 // Encodes the input sequence list using a 2d "flat" array.
 int subsmat_flat_encode_list(std::vector<std::string> sequenceList,
         nb::ndarray<float, nb::shape<-1,-1>, nb::device::cpu, nb::c_contig> outputArray,
-        nb::ndarray<float, nb::shape<21,21>, nb::device::cpu, nb::c_contig> aaTokens
+        nb::ndarray<float, nb::shape<STD_ALPHABET_SIZE,STD_ALPHABET_SIZE>,
+                nb::device::cpu, nb::c_contig> aaTokens
         ){
     if (sequenceList.size() != outputArray.shape(0))
         return INVALID_SEQUENCE;
 
     int errorCode = subsmat_encode_array(outputArray.data(), aaTokens.data(),
-            sequenceList, outputArray.shape(1) * 21);
+            sequenceList, outputArray.shape(1));
 
     return errorCode;
 }
@@ -27,16 +30,17 @@ int subsmat_flat_encode_list(std::vector<std::string> sequenceList,
 // Encodes the input sequence list using a 3d array.
 int subsmat_3d_encode_list(std::vector<std::string> sequenceList,
         nb::ndarray<float, nb::shape<-1,-1,-1>, nb::device::cpu, nb::c_contig> outputArray,
-        nb::ndarray<float, nb::shape<21,21>, nb::device::cpu, nb::c_contig> aaTokens
+        nb::ndarray<float, nb::shape<STD_ALPHABET_SIZE,STD_ALPHABET_SIZE>,
+                        nb::device::cpu, nb::c_contig> aaTokens
         ){
     if (sequenceList.size() != outputArray.shape(0))
         return INVALID_SEQUENCE;
 
-    if (outputArray.shape(2) != 21)
+    if (outputArray.shape(2) != STD_ALPHABET_SIZE)
         return INVALID_SEQUENCE;
 
     int errorCode = subsmat_encode_array(outputArray.data(), aaTokens.data(),
-            sequenceList, outputArray.shape(1) * 21);
+            sequenceList, outputArray.shape(1) * STD_ALPHABET_SIZE);
 
     return errorCode;
 }
@@ -50,7 +54,7 @@ int subsmat_encode_array(float *outputArray, float *aaTokens,
         std::vector<std::string> &sequenceList, size_t outputDim1){
 
     for (size_t i=0; i < sequenceList.size(); i++){
-        if ( (sequenceList[i].length() * 21) > outputDim1)
+        if ( (sequenceList[i].length() * STD_ALPHABET_SIZE) > outputDim1)
             return INVALID_SEQUENCE;
 
         float *currentElement = outputArray + i * outputDim1;
@@ -127,8 +131,8 @@ int subsmat_encode_array(float *outputArray, float *aaTokens,
                     break;
             }
 
-            float *currentAAToken = aaTokens + positionCode * 21;
-            for (size_t k=0; k < 21; k++){
+            float *currentAAToken = aaTokens + positionCode * STD_ALPHABET_SIZE;
+            for (size_t k=0; k < STD_ALPHABET_SIZE; k++){
                 *currentElement = currentAAToken[k];
                 currentElement++;
             }
