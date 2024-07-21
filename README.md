@@ -104,6 +104,6 @@ integer encoding, the output array is always a 2d array anyway, so
 
 ```python
 first_set = encoder1.encode(sequences, flatten_output_array = False, max_length = None)
-second_set = encoder1.encode(sequences, max_length = None)
-third_set = encoder1.encode(sequences, flatten_output_array = False, max_length = None)
+second_set = encoder2.encode(sequences, max_length = None)
+third_set = encoder3.encode(sequences, flatten_output_array = False, max_length = None)
 ```
