@@ -25,10 +25,9 @@ gaps) with various percent homologies and two encoding schemes supported.
 `cpp_protein_encoders` encodes sequences as numpy arrays. Why not as
 PyTorch / Jax / Tensorflow? There are two reasons for this. First, numpy is
 much more universal. A numpy array is easily converted to e.g. a PyTorch
-array in-place with negligible overhead, and given numpy's popularity,
-all the other popular frameworks can convert numpy arrays to their
-own format. Moreover, you may need to use encoded sequences as input to
-a library like LightGBM, XGBoost or xGPR that uses numpy arrays as input.
+(or other framework) array in-place with negligible overhead. Moreover,
+you may need to use encoded sequences as input to a library like LightGBM,
+XGBoost or xGPR that takes numpy arrays as input.
 
 Second, by using numpy we ensure this package has only a single
 dependency -- numpy -- which is *relatively* lightweight (the same cannot
