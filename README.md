@@ -58,48 +58,52 @@ from cpp_protein_encoders import SubstitutionMatrixEncoder
 # Note that all characters are expected to be uppercase.
 
 sequences = ['AAAGGGYYY', 'CCCTTTAAA', 'GGGTTTFF-']
+```
 
+When creating a OneHotProteinEncoder or an IntegerProteinEncoder, we
+can use either the 'standard' alphabet (basic 20 AAs), the 'gapped'
+alphabet (basic 20 AAs + gaps), or the 'expanded' alphabet (gaps +
+unusual AAs, see above). If we pass sequences that contain unexpected
+characters, an exception will be raised.
 
-# When creating a OneHotProteinEncoder or an IntegerProteinEncoder, we
-# can use either the 'standard' alphabet (basic 20 AAs), the 'gapped'
-# alphabet (basic 20 AAs + gaps), or the 'expanded' alphabet (gaps +
-# unusual AAs, see above). If we pass sequences that contain unexpected
-# characters, an exception will be raised.
-
+```python
 encoder1 = OneHotProteinEncoder(alphabet = 'gapped')
 encoder2 = IntegerProteinEncoder(alphabet = 'gapped')
+```
 
-# For substitution matrices, we can select a homology value to indicate
-# which substitution matrix to use (90% homology, 85%, and so on).
-# Current options are '95', '90', '85', '75', '62'.
-# We can also set 'use_standardized_mat' to be True or False. If True,
-# each AA is encoded using the corresponding row of a scaled Cholesky
-# decomposition of a distance matrix built using the substitution matrix.
-# This ensures that the Euclidean distance between any two representations
-# is equal to the distance between them as determined using the substitution
-# matrix. This can work well for kernel machines and some NNs. Alternatively,
-# we can set 'use_standardized_mat' to be False, in which case the AAs are
-# encoded as the corresponding row of the substitution matrix. This is
-# unlikely to work well in kernel machines but may work well for some NNs.
+For substitution matrices, we can select a homology value to indicate
+which substitution matrix to use (90% homology, 85%, and so on).
+Current options are '95', '90', '85', '75', '62'.
+We can also set 'use_standardized_mat' to be True or False. If True,
+each AA is encoded using the corresponding row of a scaled Cholesky
+decomposition of a distance matrix built using the substitution matrix.
+This ensures that the Euclidean distance between any two representations
+is equal to the distance between them as determined using the substitution
+matrix. This can work well for kernel machines and some NNs. Alternatively,
+we can set 'use_standardized_mat' to be False, in which case the AAs are
+encoded as the corresponding row of the substitution matrix. This is
+unlikely to work well in kernel machines but may work well for some NNs.
 
+```python
 encoder3 = SubstitutionMatrixEncoder(homology = '90', use_standardized_mat = True)
+```
 
-# For one-hot and substitution matrices, when encoding, you can specify 
-# 'all_same_length = True' (or False) and 'flatten_output_array = True'
-# (or False). If all_same_length, sequences are checked to make sure they
-# are all the same length, and if they are not, an exception is raised.
-# Otherwise sequences are zero-padded to be the same length. If
-# flatten_output_array, the array that is returned is 2d and is of
-# shape N x (M * A) where N is number of sequences, M is largest number
-# of AAs and A is the alphabet size. Otherwise, output array is of size
-# N x M x A and is 3d.
-#
-# For integer encoding, output arrays are always 2d, but you can still
-# set the 'all_same_length' flag as desired.
+When encoding, there are two important options:
+`max_length` and `flatten_output_array`. `max_length` can be None or
+an integer. If None, the maximum length is determined from the input
+sequence list and all sequences are if necessary zero-padded to be that
+length. If `max_length` is an int, all sequences are if necessary zero-
+padded to be `max_length`. (If you specify max length then pass a sequence
+that is *longer*, an exception will be raised).
 
-first_set = encoder1.encode(sequences, all_same_length = False,
-                           flatten_output_array = False)
-second_set = encoder1.encode(sequences, all_same_length = False)
-third_set = encoder1.encode(sequences, all_same_length = False,
-                           flatten_output_array = False)
+The output array is normally a 3d array of size N x M x A for N sequences,
+M amino acids and A alphabet size. If `flatten_output_array` is True,
+this is flattened to a 2d array of size N x (M * A). *IMPORTANT*: For
+integer encoding, the output array is always a 2d array anyway, so
+`flatten_output_array` is not in that case accepted as an option.
+
+```python
+first_set = encoder1.encode(sequences, flatten_output_array = False, max_length = None)
+second_set = encoder1.encode(sequences, max_length = None)
+third_set = encoder1.encode(sequences, flatten_output_array = False, max_length = None)
 ```
