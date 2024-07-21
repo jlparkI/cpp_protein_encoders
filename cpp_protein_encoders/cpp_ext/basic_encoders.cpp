@@ -1,6 +1,6 @@
 /* Includes the functions for basic tokenizers -- one hot, substitution
  * matrix and integer.*/
-#include "basic_tokenizers.h"
+#include "basic_encoders.h"
 
 namespace nb = nanobind;
 
@@ -20,7 +20,7 @@ int onehot_flat_encode_list(std::vector<std::string> sequenceList,
         nb::ndarray<uint8_t, nb::shape<-1,-1>, nb::device::cpu, nb::c_contig> outputArray,
         bool expandedSymbolSet, bool addGaps){
 
-    size_t alphabetSize;
+    auto arrView = outputArray.view();
 
     if (sequenceList.size() != outputArray.shape(0))
         return INVALID_SEQUENCE;
@@ -31,10 +31,10 @@ int onehot_flat_encode_list(std::vector<std::string> sequenceList,
     // be very small in general). It is however more verbose...
 
     if (expandedSymbolSet){
-        alphabetSize = 27;
+        size_t alphabetSize = 27;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length() * alphabetSize) > outputArray.shape(1))
+            if ((sequenceList[i].length() * alphabetSize) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             int sequencePosition = 0;
@@ -46,17 +46,17 @@ int onehot_flat_encode_list(std::vector<std::string> sequenceList,
                 int positionCode = expandedSymbolSetCharReader(sequenceList[i][j]);
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
-                outputArray(i, sequencePosition+positionCode) = 1;
+                arrView(i, sequencePosition+positionCode) = 1;
                 sequencePosition += alphabetSize;
             }
         }
     }
 
     else if (addGaps){
-        alphabetSize = 21;
+        size_t alphabetSize = 21;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length() * alphabetSize) > outputArray.shape(1))
+            if ((sequenceList[i].length() * alphabetSize) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             int sequencePosition = 0;
@@ -69,17 +69,17 @@ int onehot_flat_encode_list(std::vector<std::string> sequenceList,
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
 
-                outputArray(i, sequencePosition+positionCode) = 1;
+                arrView(i, sequencePosition+positionCode) = 1;
                 sequencePosition += alphabetSize;
             }
         }
     }
 
     else{
-        alphabetSize = 20;
+        size_t alphabetSize = 20;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length() * alphabetSize) > outputArray.shape(1))
+            if ((sequenceList[i].length() * alphabetSize) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             int sequencePosition = 0;
@@ -91,7 +91,7 @@ int onehot_flat_encode_list(std::vector<std::string> sequenceList,
                 int positionCode = standardSymbolSetCharReader(sequenceList[i][j]);
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
-                outputArray(i, sequencePosition+positionCode) = 1;
+                arrView(i, sequencePosition+positionCode) = 1;
                 sequencePosition += alphabetSize;
             }
         }
@@ -110,7 +110,7 @@ int onehot_3d_encode_list(std::vector<std::string> sequenceList,
         nb::ndarray<uint8_t, nb::shape<-1,-1,-1>, nb::device::cpu, nb::c_contig> outputArray,
         bool expandedSymbolSet, bool addGaps){
 
-    size_t alphabetSize;
+    auto arrView = outputArray.view();
 
     if (sequenceList.size() != outputArray.shape(0))
         return INVALID_SEQUENCE;
@@ -121,12 +121,12 @@ int onehot_3d_encode_list(std::vector<std::string> sequenceList,
     // be very small in general). It is however more verbose...
 
     if (expandedSymbolSet){
-        alphabetSize = 27;
-        if (outputArray.shape(2) != alphabetSize)
+        size_t alphabetSize = 27;
+        if (arrView.shape(2) != alphabetSize)
             return INVALID_SEQUENCE;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length()) > outputArray.shape(1))
+            if ((sequenceList[i].length()) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             for (size_t j=0; j < sequenceList[i].length(); j++){
@@ -136,18 +136,18 @@ int onehot_3d_encode_list(std::vector<std::string> sequenceList,
                 int positionCode = expandedSymbolSetCharReader(sequenceList[i][j]);
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
-                outputArray(i, j, positionCode) = 1;
+                arrView(i, j, positionCode) = 1;
             }
         }
     }
 
     else if (addGaps){
-        alphabetSize = 21;
-        if (outputArray.shape(2) != alphabetSize)
+        size_t alphabetSize = 21;
+        if (arrView.shape(2) != alphabetSize)
             return INVALID_SEQUENCE;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length()) > outputArray.shape(1))
+            if ((sequenceList[i].length()) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             for (size_t j=0; j < sequenceList[i].length(); j++){
@@ -157,18 +157,18 @@ int onehot_3d_encode_list(std::vector<std::string> sequenceList,
                 int positionCode = gappedSymbolSetCharReader(sequenceList[i][j]);
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
-                outputArray(i, j, positionCode) = 1;
+                arrView(i, j, positionCode) = 1;
             }
         }
     }
 
     else{
-        alphabetSize = 20;
-        if (outputArray.shape(2) != alphabetSize)
+        size_t alphabetSize = 20;
+        if (arrView.shape(2) != alphabetSize)
             return INVALID_SEQUENCE;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length()) > outputArray.shape(1))
+            if ((sequenceList[i].length()) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             for (size_t j=0; j < sequenceList[i].length(); j++){
@@ -178,7 +178,7 @@ int onehot_3d_encode_list(std::vector<std::string> sequenceList,
                 int positionCode = standardSymbolSetCharReader(sequenceList[i][j]);
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
-                outputArray(i, j, positionCode) = 1;
+                arrView(i, j, positionCode) = 1;
             }
         }
     }
@@ -199,7 +199,7 @@ int integer_encode_list(std::vector<std::string> sequenceList,
         nb::ndarray<uint8_t, nb::shape<-1,-1>, nb::device::cpu, nb::c_contig> outputArray,
         bool expandedSymbolSet, bool addGaps){
 
-    size_t alphabetSize;
+    auto arrView = outputArray.view();
 
     if (sequenceList.size() != outputArray.shape(0))
         return INVALID_SEQUENCE;
@@ -210,10 +210,10 @@ int integer_encode_list(std::vector<std::string> sequenceList,
     // be very small in general). It is however more verbose...
 
     if (expandedSymbolSet){
-        alphabetSize = 27;
+        size_t alphabetSize = 27;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length()) > outputArray.shape(1))
+            if ((sequenceList[i].length()) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             for (size_t j=0; j < sequenceList[i].length(); j++){
@@ -224,16 +224,16 @@ int integer_encode_list(std::vector<std::string> sequenceList,
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
 
-                outputArray(i, j) = positionCode;
+                arrView(i, j) = positionCode;
             }
         }
     }
 
     else if (addGaps){
-        alphabetSize = 21;
+        size_t alphabetSize = 21;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length()) > outputArray.shape(1))
+            if ((sequenceList[i].length()) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             for (size_t j=0; j < sequenceList[i].length(); j++){
@@ -244,16 +244,16 @@ int integer_encode_list(std::vector<std::string> sequenceList,
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
 
-                outputArray(i, j) = positionCode;
+                arrView(i, j) = positionCode;
             }
         }
     }
 
     else{
-        alphabetSize = 20;
+        size_t alphabetSize = 20;
 
         for (size_t i=0; i < sequenceList.size(); i++){
-            if ((sequenceList[i].length()) > outputArray.shape(1))
+            if ((sequenceList[i].length()) > arrView.shape(1))
                 return INVALID_SEQUENCE;
 
             for (size_t j=0; j < sequenceList[i].length(); j++){
@@ -264,7 +264,7 @@ int integer_encode_list(std::vector<std::string> sequenceList,
                 if (positionCode < 0)
                     return INVALID_SEQUENCE;
 
-                outputArray(i, j) = positionCode;
+                arrView(i, j) = positionCode;
             }
         }
     }

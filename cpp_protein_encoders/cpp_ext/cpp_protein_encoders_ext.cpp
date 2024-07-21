@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 #include "utilities.h"
-#include "basic_tokenizers.h"
+#include "basic_encoders.h"
 #include "subsmat_tokenizer.h"
 
 namespace nb = nanobind;
 
-NB_MODULE(cpp_protein_tokenizers_ext, m){
-    m.def("validate_sequence_list", &validate_sequence_list);
+NB_MODULE(cpp_protein_encoders_ext, m){
+    m.def("get_max_length", &get_max_length);
     m.def("onehot_flat_encode_list", &onehot_flat_encode_list,
             nb::arg("sequenceList"), nb::arg("outputArray").noconvert(),
             nb::arg("expandedSymbolSet"), nb::arg("addGaps"));

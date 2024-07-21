@@ -22,5 +22,6 @@ int subsmat_3d_encode_list(std::vector<std::string> sequenceList,
 
 int subsmat_encode_array(float *outputArray, float *aaTokens,
         std::vector<std::string> &sequenceList, size_t maxAAs);
+int symbolSetCharReader(char &letter);
 
 #endif

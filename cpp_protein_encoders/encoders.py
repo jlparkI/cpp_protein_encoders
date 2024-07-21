@@ -1,9 +1,9 @@
-"""Contains Python wrapper code for the main tokenizers."""
+"""Contains Python wrapper code for the main encoders."""
 import os
 import numpy as np
-from cpp_protein_tokenizers.cpp_protein_tokenizers_ext import validate_sequence_list, onehot_flat_encode_list, onehot_3d_encode_list
-from cpp_protein_tokenizers.cpp_protein_tokenizers_ext import subsmat_flat_encode_list, subsmat_3d_encode_list
-from cpp_protein_tokenizers.cpp_protein_tokenizers_ext import integer_encode_list
+from cpp_protein_encoders.cpp_protein_encoders_ext import get_max_length, onehot_flat_encode_list, onehot_3d_encode_list
+from cpp_protein_encoders.cpp_protein_encoders_ext import subsmat_flat_encode_list, subsmat_3d_encode_list
+from cpp_protein_encoders.cpp_protein_encoders_ext import integer_encode_list
 
 
 
@@ -62,10 +62,9 @@ class OneHotProteinEncoder():
         Raises:
             RuntimeError: An exception is raised if invalid input is supplied.
         """
-        max_length, err_code = validate_sequence_list(sequence_list, self.expanded_symbol_set,
-                self.add_gaps, all_same_length)
+        max_length = get_max_length(sequence_list, all_same_length)
 
-        if err_code != 1:
+        if max_length == 0:
             raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
 
         if flatten_output_array:
@@ -132,10 +131,9 @@ class IntegerProteinEncoder():
         Raises:
             RuntimeError: An exception is raised if invalid input is supplied.
         """
-        max_length, err_code = validate_sequence_list(sequence_list, self.expanded_symbol_set,
-                self.add_gaps, all_same_length)
+        max_length = get_max_length(sequence_list, all_same_length)
 
-        if err_code != 1:
+        if max_length == 0:
             raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
 
         output_array = np.zeros((len(sequence_list), max_length),
@@ -214,10 +212,9 @@ class SubstitutionMatrixEncoder():
         Raises:
             RuntimeError: An exception is raised if invalid input is supplied.
         """
-        max_length, err_code = validate_sequence_list(sequence_list, False,
-                True, all_same_length)
+        max_length = get_max_length(sequence_list, all_same_length)
 
-        if err_code != 1:
+        if max_length == 0:
             raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
 
         if flatten_output_array:

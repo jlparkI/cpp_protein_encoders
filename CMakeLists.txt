@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 find_package(nanobind CONFIG REQUIRED)
 
 nanobind_add_module(
-  cpp_protein_tokenizers_ext
+  cpp_protein_encoders_ext
 
   # Target the stable ABI for Python 3.12+, which reduces
   # the number of binary wheels that must be built. This
@@ -24,11 +24,11 @@ nanobind_add_module(
 
   NB_STATIC
 
-  cpp_protein_tokenizers/cpp_ext/basic_tokenizers.cpp
-  cpp_protein_tokenizers/cpp_ext/cpp_protein_tokenizers_ext.cpp
-  cpp_protein_tokenizers/cpp_ext/subsmat_tokenizer.cpp
-  cpp_protein_tokenizers/cpp_ext/utilities.cpp
+  cpp_protein_encoders/cpp_ext/basic_encoders.cpp
+  cpp_protein_encoders/cpp_ext/cpp_protein_encoders_ext.cpp
+  cpp_protein_encoders/cpp_ext/subsmat_tokenizer.cpp
+  cpp_protein_encoders/cpp_ext/utilities.cpp
 
 )
 
-install(TARGETS cpp_protein_tokenizers_ext LIBRARY DESTINATION ${SKBUILD_PROJECT_NAME})
+install(TARGETS cpp_protein_encoders_ext LIBRARY DESTINATION ${SKBUILD_PROJECT_NAME})

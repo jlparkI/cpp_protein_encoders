@@ -60,76 +60,9 @@ int subsmat_encode_array(float *outputArray, float *aaTokens,
         float *currentElement = outputArray + i * outputDim1;
 
         for (size_t j=0; j < sequenceList[i].length(); j++){
-            int positionCode;
-
-            switch (sequenceList[i][j]){
-                case 'A':
-                    positionCode = 0;
-                    break;
-                case 'C':
-                    positionCode = 1;
-                    break;
-                case 'D':
-                    positionCode = 2;
-                    break;
-                case 'E':
-                    positionCode = 3;
-                    break;
-                case 'F':
-                    positionCode = 4;
-                    break;
-                case 'G':
-                    positionCode = 5;
-                    break;
-                case 'H':
-                    positionCode = 6;
-                    break;
-                case 'I':
-                    positionCode = 7;
-                    break;
-                case 'K':
-                    positionCode = 8;
-                    break;
-                case 'L':
-                    positionCode = 9;
-                    break;
-                case 'M':
-                    positionCode = 10;
-                    break;
-                case 'N':
-                    positionCode = 11;
-                    break;
-                case 'P':
-                    positionCode = 12;
-                    break;
-                case 'Q':
-                    positionCode = 13;
-                    break;
-                case 'R':
-                    positionCode = 14;
-                    break;
-                case 'S':
-                    positionCode = 15;
-                    break;
-                case 'T':
-                    positionCode = 16;
-                    break;
-                case 'V':
-                    positionCode = 17;
-                    break;
-                case 'W':
-                    positionCode = 18;
-                    break;
-                case 'Y':
-                    positionCode = 19;
-                    break;
-                case '-':
-                    positionCode = 20;
-                    break;
-                default:
-                    return INVALID_SEQUENCE;
-                    break;
-            }
+            int positionCode = symbolSetCharReader(sequenceList[i][j]);
+            if (positionCode < 0)
+                return INVALID_SEQUENCE;
 
             float *currentAAToken = aaTokens + positionCode * STD_ALPHABET_SIZE;
             for (size_t k=0; k < STD_ALPHABET_SIZE; k++){
@@ -140,4 +73,82 @@ int subsmat_encode_array(float *outputArray, float *aaTokens,
     }
 
     return VALID_SEQUENCE;
+}
+
+
+
+// Returns a position code for the gapped symbol set. A value
+// < 0 indicates an invalid character.
+int symbolSetCharReader(char &letter){
+    int positionCode;
+
+    switch (letter){
+        case 'A':
+            positionCode = 0;
+            break;
+        case 'C':
+            positionCode = 1;
+            break;
+        case 'D':
+            positionCode = 2;
+            break;
+        case 'E':
+            positionCode = 3;
+            break;
+        case 'F':
+            positionCode = 4;
+            break;
+        case 'G':
+            positionCode = 5;
+            break;
+        case 'H':
+            positionCode = 6;
+            break;
+        case 'I':
+            positionCode = 7;
+            break;
+        case 'K':
+            positionCode = 8;
+            break;
+        case 'L':
+            positionCode = 9;
+            break;
+        case 'M':
+            positionCode = 10;
+            break;
+        case 'N':
+            positionCode = 11;
+            break;
+        case 'P':
+            positionCode = 12;
+            break;
+        case 'Q':
+            positionCode = 13;
+            break;
+        case 'R':
+            positionCode = 14;
+            break;
+        case 'S':
+            positionCode = 15;
+            break;
+        case 'T':
+            positionCode = 16;
+            break;
+        case 'V':
+            positionCode = 17;
+            break;
+        case 'W':
+            positionCode = 18;
+            break;
+        case 'Y':
+            positionCode = 19;
+            break;
+        case '-':
+            positionCode = 20;
+            break;
+        default:
+            return -1;
+            break;
+    }
+    return positionCode;
 }

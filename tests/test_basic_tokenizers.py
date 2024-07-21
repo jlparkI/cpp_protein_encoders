@@ -4,7 +4,7 @@ import os
 import random
 import unittest
 import numpy as np
-from cpp_protein_tokenizers import OneHotProteinEncoder, IntegerProteinEncoder, SubstitutionMatrixEncoder
+from cpp_protein_encoders import OneHotProteinEncoder, IntegerProteinEncoder, SubstitutionMatrixEncoder
 
 
 
@@ -60,7 +60,7 @@ class TestBasicEncoders(unittest.TestCase):
 
     def test_onehot_encoding(self):
         """Check the one-hot encoder for correctness."""
-        max_length, nseqs = 400, 251
+        max_length, nseqs = 1000, 1001
 
         for flatten in [True, False]:
             for all_one_length in [True, False]:
@@ -76,7 +76,7 @@ class TestBasicEncoders(unittest.TestCase):
 
     def test_integer_encoding(self):
         """Check the integer encoder for correctness."""
-        max_length, nseqs = 400, 251
+        max_length, nseqs = 1000, 1001
 
         for all_one_length in [True, False]:
             for alphabet in ["standard", "gapped", "expanded"]:
@@ -90,7 +90,7 @@ class TestBasicEncoders(unittest.TestCase):
 
     def test_submat_encoding(self):
         """Check the substitution matrix encoder for correctness."""
-        max_length, nseqs = 400, 251
+        max_length, nseqs = 1000, 1001
 
         for all_one_length in [True, False]:
             for flatten in [True, False]:
