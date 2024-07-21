@@ -52,7 +52,7 @@ pip install cpp_protein_encoders
 
 ### Usage
 
-```
+```python
 from cpp_protein_encoders import OneHotProteinEncoder, IntegerProteinEncoder
 from cpp_protein_encoders import SubstitutionMatrixEncoder
 
