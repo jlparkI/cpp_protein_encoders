@@ -38,8 +38,8 @@ class OneHotProteinEncoder():
                         "'expanded'].")
 
 
-    def encode(self, sequence_list, all_same_length = False,
-            flatten_output_array = False):
+    def encode(self, sequence_list, flatten_output_array = False,
+            max_length = None):
         """One-hot encode and return a numpy array. If flattened, it is of
         shape N x (M * A), where A is the alphabet size (20 for standard amino
         acids only, 21 if gaps are included, 27 if using an expanded alphabet),
@@ -48,11 +48,15 @@ class OneHotProteinEncoder():
 
         Args:
             sequence_list (list): A list of sequences.
-            all_same_length (bool): If True, the sequences are expected to
-                be all the same length; if they are not there is an exception.
-                If False, sequences are zero-padded to be the same length.
             flatten_output_array (bool): If True, a 2d flattened array is
                 returned, otherwise a 3d array as discussed above.
+            max_length: Either None or an int. If None, the sequence length
+                is determined based on the longest sequence present in the
+                input list and sequences are zero-padded to that size if
+                necessary. If an int, sequences are zero-padded to be the
+                size of max_length (unless they already are that length).
+                Note that specifying max_length and then passing in sequences
+                longer than that will cause an exception.
 
         Returns:
             encoded_seqs (np.ndarray): A numpy array of shape N x (M * A)
@@ -62,18 +66,21 @@ class OneHotProteinEncoder():
         Raises:
             RuntimeError: An exception is raised if invalid input is supplied.
         """
-        max_length = get_max_length(sequence_list, all_same_length)
+        if max_length is None:
+            seq_length = get_max_length(sequence_list, False)
 
-        if max_length == 0:
-            raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
+            if seq_length == 0:
+                raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
+        else:
+            seq_length = max_length
 
         if flatten_output_array:
-            output_array = np.zeros((len(sequence_list), self.alphabet_size * max_length),
+            output_array = np.zeros((len(sequence_list), self.alphabet_size * seq_length),
                     dtype=np.uint8)
             err_code = onehot_flat_encode_list(sequence_list, output_array,
                     self.expanded_symbol_set, self.add_gaps)
         else:
-            output_array = np.zeros((len(sequence_list), max_length, self.alphabet_size),
+            output_array = np.zeros((len(sequence_list), seq_length, self.alphabet_size),
                     dtype=np.uint8)
             err_code = onehot_3d_encode_list(sequence_list, output_array,
                     self.expanded_symbol_set, self.add_gaps)
@@ -115,7 +122,7 @@ class IntegerProteinEncoder():
                         "'expanded'].")
 
 
-    def encode(self, sequence_list, all_same_length = False):
+    def encode(self, sequence_list, max_length = None):
         """One-hot encode and return a numpy array of shape N x M, where N is
         the number of datapoints and M is the number of amino acids.
 
@@ -124,6 +131,13 @@ class IntegerProteinEncoder():
             all_same_length (bool): If True, the sequences are expected to
                 be all the same length; if they are not there is an exception.
                 If False, sequences are zero-padded to be the same length.
+            max_length: Either None or an int. If None, the sequence length
+                is determined based on the longest sequence present in the
+                input list and sequences are zero-padded to that size if
+                necessary. If an int, sequences are zero-padded to be the
+                size of max_length (unless they already are that length).
+                Note that specifying max_length and then passing in sequences
+                longer than that will cause an exception.
 
         Returns:
             encoded_seqs (np.ndarray): A numpy array of shape N x M (see above).
@@ -131,12 +145,15 @@ class IntegerProteinEncoder():
         Raises:
             RuntimeError: An exception is raised if invalid input is supplied.
         """
-        max_length = get_max_length(sequence_list, all_same_length)
+        if max_length is None:
+            seq_length = get_max_length(sequence_list, False)
 
-        if max_length == 0:
-            raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
+            if seq_length == 0:
+                raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
+        else:
+            seq_length = max_length
 
-        output_array = np.zeros((len(sequence_list), max_length),
+        output_array = np.zeros((len(sequence_list), seq_length),
                     dtype=np.uint8)
         err_code = integer_encode_list(sequence_list, output_array,
                     self.expanded_symbol_set, self.add_gaps)
@@ -189,8 +206,8 @@ class SubstitutionMatrixEncoder():
         os.chdir(current_dir)
 
 
-    def encode(self, sequence_list, all_same_length = False,
-            flatten_output_array = False):
+    def encode(self, sequence_list, flatten_output_array = False,
+            max_length = None):
         """Encode and return a numpy array. If flattened, it is of
         shape N x (M * 21), where M is the number of amino acids and
         N is the number of datapoints. Otherwise it is a 3d array of
@@ -212,18 +229,21 @@ class SubstitutionMatrixEncoder():
         Raises:
             RuntimeError: An exception is raised if invalid input is supplied.
         """
-        max_length = get_max_length(sequence_list, all_same_length)
+        if max_length is None:
+            seq_length = get_max_length(sequence_list, False)
 
-        if max_length == 0:
-            raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
+            if seq_length == 0:
+                raise RuntimeError("Invalid sequences supplied. Check the input settings you used.")
+        else:
+            seq_length = max_length
 
         if flatten_output_array:
-            output_array = np.zeros((len(sequence_list), 21 * max_length),
+            output_array = np.zeros((len(sequence_list), 21 * seq_length),
                     dtype=np.float32)
             err_code = subsmat_flat_encode_list(sequence_list, output_array,
                     self.pssm_matrix)
         else:
-            output_array = np.zeros((len(sequence_list), max_length, 21),
+            output_array = np.zeros((len(sequence_list), seq_length, 21),
                     dtype=np.float32)
             err_code = subsmat_3d_encode_list(sequence_list, output_array,
                     self.pssm_matrix)

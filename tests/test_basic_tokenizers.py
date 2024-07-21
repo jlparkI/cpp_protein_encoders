@@ -24,7 +24,7 @@ class TestBasicEncoders(unittest.TestCase):
         for tokenizer in tokenizers:
             for slist in problematic_sequence_lists:
                 with self.assertRaises(RuntimeError):
-                    res = tokenizer.encode(slist)
+                    _ = tokenizer.encode(slist)
 
         # Use tokenizers with standard alphabet only.
         tokenizers = [OneHotProteinEncoder("standard"), IntegerProteinEncoder("standard")]
@@ -34,7 +34,7 @@ class TestBasicEncoders(unittest.TestCase):
         for tokenizer in tokenizers:
             for slist in problematic_sequence_lists:
                 with self.assertRaises(RuntimeError):
-                    res = tokenizer.encode(slist)
+                    _ = tokenizer.encode(slist)
 
         # Use tokenizers with expanded alphabet only.
         tokenizers = [OneHotProteinEncoder("expanded"), IntegerProteinEncoder("expanded")]
@@ -44,7 +44,7 @@ class TestBasicEncoders(unittest.TestCase):
         for tokenizer in tokenizers:
             for slist in problematic_sequence_lists:
                 with self.assertRaises(RuntimeError):
-                    res = tokenizer.encode(slist)
+                    _ = tokenizer.encode(slist)
 
         # Try passing variable length sequences with all same length set.
         tokenizers = [OneHotProteinEncoder(), IntegerProteinEncoder(),
@@ -55,7 +55,7 @@ class TestBasicEncoders(unittest.TestCase):
         for tokenizer in tokenizers:
             for slist in problematic_sequence_lists:
                 with self.assertRaises(RuntimeError):
-                    res = tokenizer.encode(slist, all_same_length = True)
+                    _ = tokenizer.encode(slist, max_length = 2)
 
 
     def test_onehot_encoding(self):
@@ -63,14 +63,13 @@ class TestBasicEncoders(unittest.TestCase):
         max_length, nseqs = 1000, 1001
 
         for flatten in [True, False]:
-            for all_one_length in [True, False]:
+            for slength in [None, max_length]:
                 for alphabet in ["standard", "gapped", "expanded"]:
                     encoder = OneHotProteinEncoder(alphabet)
                     seqs = generate_random_sequences(nseqs, max_length,
-                        all_one_length, alphabet)
+                        alphabet)
                     gt_array = onehot_encode(seqs, flatten, alphabet)
-                    comp_array = encoder.encode(seqs, all_one_length,
-                            flatten)
+                    comp_array = encoder.encode(seqs, flatten, slength)
                     self.assertTrue(np.allclose(gt_array, comp_array))
 
 
@@ -78,13 +77,13 @@ class TestBasicEncoders(unittest.TestCase):
         """Check the integer encoder for correctness."""
         max_length, nseqs = 1000, 1001
 
-        for all_one_length in [True, False]:
+        for slength in [None, max_length]:
             for alphabet in ["standard", "gapped", "expanded"]:
                 encoder = IntegerProteinEncoder(alphabet)
                 seqs = generate_random_sequences(nseqs, max_length,
-                    all_one_length, alphabet)
+                    alphabet)
                 gt_array = integer_encode(seqs, alphabet)
-                comp_array = encoder.encode(seqs, all_one_length)
+                comp_array = encoder.encode(seqs, slength)
                 self.assertTrue(np.allclose(gt_array, comp_array))
 
 
@@ -92,13 +91,13 @@ class TestBasicEncoders(unittest.TestCase):
         """Check the substitution matrix encoder for correctness."""
         max_length, nseqs = 1000, 1001
 
-        for all_one_length in [True, False]:
+        for slength in [None, max_length]:
             for flatten in [True, False]:
                 encoder = SubstitutionMatrixEncoder()
                 seqs = generate_random_sequences(nseqs, max_length,
-                    all_one_length, "gapped")
+                    "gapped")
                 gt_array = pfasum_encode(seqs, flatten)
-                comp_array = encoder.encode(seqs, all_one_length, flatten)
+                comp_array = encoder.encode(seqs, flatten, slength)
                 self.assertTrue(np.allclose(gt_array, comp_array))
 
 
@@ -165,18 +164,14 @@ def pfasum_encode(sequences, flatten = False):
 
 
 
-def generate_random_sequences(num_requested, max_length, all_one_length = False,
-        alphabet = "standard"):
+def generate_random_sequences(num_requested, max_length, alphabet = "standard"):
     """Generate random sequences. Lengths are also randomized (to
     be < all_one_length) unless all_one_length is True."""
     aas = get_alphabet(alphabet)
 
     random.seed(123)
 
-    if all_one_length:
-        sequence_lengths = [max_length] * num_requested
-    else:
-        sequence_lengths = [random.randint(1, max_length) for
+    sequence_lengths = [random.randint(1, max_length) for
                 i in range(num_requested)]
 
     sequences = []
