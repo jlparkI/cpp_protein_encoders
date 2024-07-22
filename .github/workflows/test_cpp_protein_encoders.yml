@@ -24,8 +24,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip build numpy nanobind pytest
+        python -m pip install --upgrade pip build numpy nanobind
         pip install . --verbose
-    - name: Test with pytest
+    - name: Test
       run: |
-        pytest tests
+        python test_basic_tokenizers.py
