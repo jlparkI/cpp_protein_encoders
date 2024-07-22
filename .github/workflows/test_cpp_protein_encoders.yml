@@ -28,4 +28,5 @@ jobs:
         pip install . --verbose
     - name: Test
       run: |
+        cd tests
         python test_basic_tokenizers.py
